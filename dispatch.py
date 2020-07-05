@@ -189,22 +189,43 @@ def main(dict):
 #    }
 #   }   
                
+    # if dict['actionname']  == "insert":
+    #     #Construct the query that retrieves all rows from the evenDB table
+        
+    #     insertQuery = "insert into events(firstname, lastname) values(" +"'" + str(dict['user_name']) +"'" + "," + "'" + str(dict['user_lastname']) +"'"+ ")"
+
+    #     #Execute the statement
+    #     selectStmt = ibm_db.exec_immediate(conn, insertQuery)
+
+        
+    #     #result = ibm_db.fetch_both(selectStmt)
+    #     return {"msg": "I have succefully saved your information"}
+
+
+        
+    # else:
+    #     data = "no-info"   
+    
+# ======== REZA edits =========
+
     if dict['actionname']  == "insert":
-        #Construct the query that retrieves all rows from the evenDB table
-        
-        insertQuery = "insert into events(firstname, lastname) values(" +"'" + str(dict['user_name']) +"'" + "," + "'" + str(dict['user_lastname']) +"'"+ ")"
-
-        #Execute the statement
-        selectStmt = ibm_db.exec_immediate(conn, insertQuery)
-
-        
-        #result = ibm_db.fetch_both(selectStmt)
-        return {"msg": "I have succefully saved your information"}
-
-
-        
+            #Construct the query that retrieves all rows from the evenDB table
+            
+            insertQuery = "INSERT INTO person(PID,FULLNAME, EMAIL) values(" +"'" + str(dict['pid']) +"'"+","+"'" + str(dict['user_name']) +"'" + "," + "'" + str(dict['email_addr']) +"'"+ ")"
+    
+            #Execute the statement
+            selectStmt = ibm_db.exec_immediate(conn, insertQuery)
+    
+            
+            #result = ibm_db.fetch_both(selectStmt)
+            return {"msg": "I have successfully saved your information"}
+    
+    
+            
     else:
-        data = "no-info"    
+            data = "no-info"    
+            
+# ======== REZA edits =========
     
  
  
@@ -303,8 +324,6 @@ def main(dict):
 
 
 
-
-
-
+        
 
 
