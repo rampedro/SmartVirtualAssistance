@@ -8,8 +8,6 @@ import numpy as np
 import pandas as pd
 from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import train_test_split
-
-import webbrowser
         
 
 def main(dict):
@@ -17,9 +15,9 @@ def main(dict):
     min = 0
 #Getting connected to db2 Databse
 
-    dsn_hostname = "dashdb-txn-sbox-yp-dal09-10.services.dal.bluemix.net"
-    dsn_uid = "jwq92598"
-    dsn_pwd = "4xkvc26l1dzk^g4z"
+    dsn_hostname = "dashdb-txn-sbox-yp-dal09-08.services.dal.bluemix.net"
+    dsn_uid = "xdw00062"
+    dsn_pwd = "9cx^2mpfzc5bkjm7"
 
     dsn_driver = "{IBM DB2 ODBC DRIVER}"
     dsn_database = "BLUDB"            # e.g. "BLUDB"
@@ -56,24 +54,9 @@ def main(dict):
     #createStmt = ibm_db.exec_immediate(conn, createQuery)
     
     
- # --------------------------------- leave msg ------------------------------
-    if dict['actionname'] == "leaveMsg":
-        
-   
-        webbrowser.open('https://hosted11.whoson.com/newchat//contactform.htm?domain=www.advpharmacy.com&session=940-1593976174374&emb=true')  # Go to in a new windows
-   
-        return {"transfering": "good"}
-
     
-    # ---------------------------------Transfering to real Agent / or leave msg ------------------------------
-    if dict['actionname'] == "transfering_to_agnet":
-        
+    
    
-        webbrowser.open('https://hosted11.whoson.com/newchat//contactform.htm?domain=www.advpharmacy.com&session=940-1593976174374&emb=true')  # Go to in a new windows
-   
-        return {"transfering": "good"}
-
-
    
     # ---------------------------------Machine learning model ------------------------------
     
@@ -119,47 +102,10 @@ def main(dict):
         with urllib.request.urlopen(api_call_to) as url:
             data = json.loads(url.read().decode())
             
-            
-        ################# some HARD CODED LOGICS ###################
-        
-        # warning  systolic or diastolic
-        #https://www.heart.org/en/health-topics/high-blood-pressure/understanding-blood-pressure-readings
-        
-        msg_pressure = ""
-        normal = (dict['user_systolic'] < 120 and dict['user_diastolic'] < 80)
-        if normal:
-            msg_pressure = "Your blood pressure is in its Normal range.\n"
-        elif dict['user_systolic'] > 120 and dict['user_systolic'] < 129 and dict['user_diastolic'] < 80:
-            msg_pressure = "You have an elevated blood pressure.\n"
-        elif (dict['user_systolic'] > 130 and dict['user_systolic'] < 139) or (dict['user_diastolic'] > 80 and dict['user_diastolic'] < 89):
-            msg_pressure = "You have a high blood pressure.\n"
-        elif (dict['user_systolic'] > 140 and dict['user_systolic'] < 180) or (dict['user_diastolic'] > 90 and dict['user_diastolic'] < 120):
-            msg_pressure = "You have a very high blood pressure.\n"
-        else:
-            msg_pressure = "Based on your blood pressure you may have a hypertension that needs to be consulted with your doctor immediately.\n"
-            
-        result = ""
-        
-        if data['Answer'] == "not healthy" and not normal:
-            result += "Our analysis shows you might not having a healthy lifestyle.\n"
-        if data['Answer'] == "healthy" and normal:
-            result += "Our analysis shows you are having a healthy lifestyle.\n"
-        if data['Answer'] == "healthy":
-            result += "Our analysis shows you are having a healthy lifestyle, I would also remind you that "
-        
-        
-        result += str(msg_pressure)
-        
-        ## suggesting exercise and quititing smoking ordrinking
-            
-        if data['Answer'] == "not healthy" and str(dict['user_active']) == "no" and ((str(dict['user_alco']) == "yes" or str(dict['user_smoke']) == "yes")):
-            result += "Starting an exercise regim and developing an active life without alcohol cosumtion and smoking can help you be healthier."
-
-        
-        
 
 
-        return {"healthPredictResult": result}
+
+        return {"healthPredictResult": data['Answer']}
         
     # ------------------------------end of Machine learning model ------------------------------
     
@@ -180,34 +126,9 @@ def main(dict):
         
     # ---------------------------end of accessing drug infor using FDA api------------------------------
 
-    # ---------------------------suggestions drug api------------------------------
-
-    if dict['actionname'] == "check_drug_name":
-       
-       # removing the quotations
-       
-        p = dict['check_this_drug'].replace("\"","")
-        
-        
-        
-        ####DIFFERENT SUGGESTION API#####
-        
-        #api_call_to_extract_id = "https://rxnav.nlm.nih.gov/REST/spellingsuggestions.json?name=" + str(p)
-        #with urllib.request.urlopen(api_call_to_extract_id) as url:
-        #    data1 = json.loads(url.read().decode())
-        
-        
-        
-        
-        
-        api_call_to_extract_id = "https://rxnav.nlm.nih.gov/REST/Prescribe/spellingsuggestions.json?name=" + str(p)
-        with urllib.request.urlopen(api_call_to_extract_id) as url:
-            data1 = json.loads(url.read().decode())
  
-        return {"suggest": data1['suggestionGroup']['suggestionList']['suggestion']}
-        
-    # ---------------------------end of suggestions drug api------------------------------
-
+ 
+ 
     # ---------------------------accessing drug Interactions using https://rxnav.nlm.nih.gov api------------------------------
 
     
@@ -217,7 +138,7 @@ def main(dict):
         #drugName2
         
         
-        api_call_to_extract_id = "https://rxnav.nlm.nih.gov/REST/rxcui.json?name=" + str(dict['drugName1']) + "&search=1"
+        api_call_to_extract_id = "https://rxnav.nlm.nih.gov/REST/rxcui.json?name=" + dict['drugName1'] + "&search=1"
         with urllib.request.urlopen(api_call_to_extract_id) as url:
             data1 = json.loads(url.read().decode())
             
@@ -225,7 +146,7 @@ def main(dict):
         
             
             
-        api_call_to_extract_id = "https://rxnav.nlm.nih.gov/REST/rxcui.json?name=" + str(dict['drugName2']) + "&search=1"
+        api_call_to_extract_id = "https://rxnav.nlm.nih.gov/REST/rxcui.json?name=" + dict['drugName2'] + "&search=1"
         with urllib.request.urlopen(api_call_to_extract_id) as url:
             data2 = json.loads(url.read().decode())
         
@@ -268,56 +189,22 @@ def main(dict):
 #    }
 #   }   
                
-    # if dict['actionname']  == "insert":
-    #     #Construct the query that retrieves all rows from the evenDB table
-        
-    #     insertQuery = "insert into events(firstname, lastname) values(" +"'" + str(dict['user_name']) +"'" + "," + "'" + str(dict['user_lastname']) +"'"+ ")"
-
-    #     #Execute the statement
-    #     selectStmt = ibm_db.exec_immediate(conn, insertQuery)
-
-        
-    #     #result = ibm_db.fetch_both(selectStmt)
-    #     return {"msg": "I have succefully saved your information"}
-
-
-        
-    # else:
-    #     data = "no-info"   
-    
-# ======== REZA edits =========
-
     if dict['actionname']  == "insert":
-            #Construct the query that retrieves all rows from the evenDB table
-            #this = "REORG TABLE persons"
-            #runThis = ibm_db.exec_immediate(conn, this)
-            
+        #Construct the query that retrieves all rows from the evenDB table
+        
+        insertQuery = "insert into events(firstname, lastname) values(" +"'" + str(dict['user_name']) +"'" + "," + "'" + str(dict['user_lastname']) +"'"+ ")"
 
-            insertQuery = "INSERT INTO persons_with_email(FULLNAME, EMAIL) values(" + "'" + str(dict['user_name']) +"'" + "," + "'" + str(dict['email_addr']) +"'"+ ")"
-            #Execute the statement
-            selectStmt = ibm_db.exec_immediate(conn, insertQuery)
-            #result = ibm_db.fetch_both(selectStmt)
-            
-            
-            insertQuery3 = "INSERT INTO persons_with_num(FULLNAME, PHONE_NUM) values(" + "'" + str(dict['user_name']) +"'" + "," + "'" + str(dict['phone_num']) +"'"+ ")"
-            #Execute the statement
-            selectStmt3 = ibm_db.exec_immediate(conn, insertQuery3)
-            #result = ibm_db.fetch_both(selectStmt)
-            
-           
-            insertQuery2 = "INSERT INTO USER_DETAILS(MEDICAL_CONDITIONS) values(" + "'" + str(dict['user_medical_cond']) +"'"  + ")"
+        #Execute the statement
+        selectStmt = ibm_db.exec_immediate(conn, insertQuery)
 
-            selectStmt2 = ibm_db.exec_immediate(conn, insertQuery2)
-            #result2 = ibm_db.fetch_both(selectStmt2)
-            
-            return {"msg": "I have successfully remembered you."}
-    
-    
-            
+        
+        #result = ibm_db.fetch_both(selectStmt)
+        return {"msg": "I have succefully saved your information"}
+
+
+        
     else:
-            data = "no-info"    
-            
-# ======== REZA edits =========
+        data = "no-info"    
     
  
  
@@ -416,5 +303,8 @@ def main(dict):
 
 
 
-        
+
+
+
+
 
